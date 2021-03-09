@@ -1,5 +1,5 @@
 package:
-  name: mlir-graphblas
+  name: pymlir
   version: 0.3
 
 source:
@@ -21,13 +21,8 @@ requirements:
     - parse
 
 test:
-  requires:
-    - pytest
-    - pytest-cov
-    - coverage
-
   commands:
-    - pytest --pyargs mlir
+    - python -c 'import mlir; mlir.parse_string("module {}")'
 
 about:
   home: https://github.com/spcl/pymlir
