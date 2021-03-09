@@ -1,0 +1,15 @@
+name: pymlir
+
+channels:
+- conda-forge
+
+dependencies:
+# dev environment
+  - python=3.8
+  - coverage
+  - pytest
+  - pytest-cov
+
+# dependencies (so setup.py develop doesn't pip install them)
+  - lark-parser
+  - parse

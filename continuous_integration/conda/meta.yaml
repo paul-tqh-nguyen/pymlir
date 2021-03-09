@@ -1,0 +1,46 @@
+package:
+  name: mlir-graphblas
+  version: 0.3
+
+source:
+  path: ../..
+
+build:
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0)|int }}
+  string: py_{{GIT_DESCRIBE_HASH}}_{{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+
+requirements:
+  host:
+    - python
+
+  run:
+    - python
+    - lark-parser
+    - parse
+
+test:
+  requires:
+    - pytest
+    - pytest-cov
+    - coverage
+
+  commands:
+    - pytest --pyargs mlir
+
+about:
+  home: https://github.com/spcl/pymlir
+  license: BSD 3-clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'Python Interface for the Multi-Level Intermediate Representation'
+  description: |
+    pyMLIR is a full Python interface to parse, process, and output [MLIR](https://mlir.llvm.org/) files according to the
+    syntax described in the [MLIR documentation](https://github.com/llvm/llvm-project/tree/master/mlir/docs). pyMLIR
+    supports the basic dialects and can be extended with other dialects. It uses [Lark](https://github.com/lark-parser/lark)
+    to parse the MLIR syntax, and mirrors the classes into Python classes. Custom dialects can also be implemented with a
+    Python string-format-like syntax, or via direct parsing.
+
+    Note that the tool *does not depend on LLVM or MLIR*. It can be installed and invoked directly from Python.
+  dev_url: https://github.com/metagraph-dev/pymlir
