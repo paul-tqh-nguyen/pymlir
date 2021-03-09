@@ -29,6 +29,8 @@ class DimOperation(DialectOp):
 # Memory Operations
 class AllocOperation(DialectOp):
     _syntax_ = 'alloc {args.dim_and_symbol_use_list} : {type.memref_type}'
+class AllocaOperation(DialectOp):
+    _syntax_ = 'alloca {args.dim_and_symbol_use_list} : {type.memref_type}'
 class AllocStaticOperation(DialectOp):
     _syntax_ = 'alloc_static ( {base.integer_literal} ) : {type.memref_type}'
 class DeallocOperation(DialectOp):
@@ -40,10 +42,15 @@ class DmaStartOperation(DialectOp):
     ]
 class DmaWaitOperation(DialectOp):
     _syntax_ = 'dma_wait {tag.ssa_use} [ {tag_index.ssa_use_list} ] , {size.ssa_use} : {type.memref_type}'
-class ExtractElementOperation(DialectOp):
+class ExtractElementOperation(DialectOp): # TODO does this still exist in the latest std dialect?
     _syntax_ = 'extract_element {arg.ssa_use} [ {index.ssa_use_list} ] : {type.type}'
+class TensorExtractOperation(DialectOp): # TODO move this to its own dialect file
+    _syntax_ = 'tensor.extract {arg.ssa_use} [ {index.ssa_use_list} ] : {type.type}'
 class LoadOperation(DialectOp):
-    _syntax_ = 'load {arg.ssa_use} [ {index.ssa_use_list} ] : {type.memref_type}'
+    _syntax_ = [
+        'load {arg.ssa_use} [ {index.ssa_use_list} ] : {type.memref_type}',
+        'load {arg.ssa_use} [ ] : {type.memref_type}' # TODO this way of declaring this rule seems questionable
+    ]
 class SplatOperation(DialectOp):
     _syntax_ = 'splat {arg.ssa_use} : {type.type}'  # (vector_type | tensor_type)
 class StoreOperation(DialectOp):
