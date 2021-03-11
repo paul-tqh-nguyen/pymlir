@@ -1,6 +1,6 @@
 package:
   name: pymlir
-  version: 0.3
+  version: 0.3.1
 
 source:
   path: ../..

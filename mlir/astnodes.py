@@ -670,30 +670,37 @@ class Module(Node):
 
 class Function(Node):
     _fields_ = [
-        'name', 'args', 'result_types', 'attributes', 'body', 'location'
+        'name', 'args', 'result_types', 'attributes', 'body', 'location', 'visibility',
     ]
 
     def __init__(self, node: Token = None, **fields):
-        signature = node[0].children
-        # Parse signature
         index = 0
-        self.name = signature[index]
-        index += 1
-        if len(signature) > index and signature[index].data == 'argument_list':
-            self.args = signature[index].children
+        # Parse function visibility
+        if node[index].data == "function_visibility":
+            self.visibility = node[index].children[0].value
             index += 1
         else:
+            self.visibility = "public"
+        # Parse signature
+        signature = node[index].children
+        sigindex = 0
+        self.name = signature[sigindex]
+        sigindex += 1
+        if len(signature) > sigindex and signature[sigindex].data == 'argument_list':
+            self.args = signature[sigindex].children
+            sigindex += 1
+        else:
             self.args = []
-        if (len(signature) > index
-                and signature[index].data == 'function_result_list'):
+        if (len(signature) > sigindex
+                and signature[sigindex].data == 'function_result_list'):
             # first child contains all the result types
-            self.result_types = signature[index].children[0]
-            index += 1
+            self.result_types = signature[sigindex].children[0]
+            sigindex += 1
         else:
             self.result_types = []
 
         # Parse rest of function
-        index = 1
+        index += 1
         if len(node) > index and isinstance(node[index], AttributeDict):
             self.attributes = node[index]
             index += 1

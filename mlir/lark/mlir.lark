@@ -184,6 +184,12 @@ region : "{" block* "}"
 // ----------------------------------------------------------------------
 // Modules and functions
 
+// Visibility
+PUBLIC_VISIBILITY : "public"
+PRIVATE_VISIBILITY : "private"
+NESTED_VISIBILITY : "nested"
+function_visibility : PUBLIC_VISIBILITY | PRIVATE_VISIBILITY | NESTED_VISIBILITY
+
 // Arguments
 named_argument : ssa_id ":" type attribute_dict?
 argument_list : (named_argument ("," named_argument)*) | (type attribute_dict? ("," type attribute_dict?)*)
@@ -201,7 +207,7 @@ module_body : "{" (function | module | block)* "}"
 
 // Definition
 module : "module" symbol_ref_id? ("attributes" attribute_dict)? module_body trailing_location?
-function : "func" function_signature ("attributes" attribute_dict)? function_body? trailing_location?
+function : "func" function_visibility? function_signature ("attributes" attribute_dict)? function_body? trailing_location?
 
 // ----------------------------------------------------------------------
 // (semi-)affine expressions, maps, and integer sets
