@@ -45,7 +45,7 @@ class DmaWaitOperation(DialectOp):
 class ExtractElementOperation(DialectOp): # TODO does this still exist in the latest std dialect?
     _syntax_ = 'extract_element {arg.ssa_use} [ {index.ssa_use_list} ] : {type.type}'
 class TensorExtractOperation(DialectOp): # TODO move this to its own dialect file
-    _syntax_ = 'tensor.extract {arg.ssa_use} [ {index.ssa_use_list} ] : {type.type}'
+    _syntax_ = 'tensor.extract {arg.ssa_use} [ {index.ssa_use_list_optional} ] : {type.type}'
 class LoadOperation(DialectOp):
     _syntax_ = [
         'load {arg.ssa_use} [ {index.ssa_use_list} ] : {type.memref_type}',

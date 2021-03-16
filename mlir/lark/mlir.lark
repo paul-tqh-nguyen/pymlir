@@ -51,6 +51,7 @@ ssa_id_list : ssa_id ("," ssa_id)*
 // Uses of an SSA value, e.g., in an operand list to an operation.
 ssa_use : ssa_id | constant_literal
 ssa_use_list : ssa_use ("," ssa_use)*
+ssa_use_list_optional : [ssa_use_list] // TODO can this be used in more places?
 
 // ----------------------------------------------------------------------
 // Types
@@ -251,7 +252,7 @@ semi_affine_expr : "(" semi_affine_expr ")"                        -> semi_affin
                    | "(" semi_affine_expr ")" -> semi_affine_parens
 
 multi_dim_affine_expr_no_parens : affine_expr ("," affine_expr)*
-multi_dim_affine_expr : "(" multi_dim_affine_expr_no_parens ")"
+multi_dim_affine_expr : "(" [multi_dim_affine_expr_no_parens] ")"
 multi_dim_semi_affine_expr : "(" semi_affine_expr ("," semi_affine_expr)* ")"
 affine_constraint : affine_expr ">=" "0"    -> affine_constraint_ge
                   | affine_expr "==" "0"    -> affine_constraint_eq
