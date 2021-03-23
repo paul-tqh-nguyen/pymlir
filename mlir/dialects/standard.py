@@ -54,10 +54,10 @@ class LoadOperation(DialectOp):
 class SplatOperation(DialectOp):
     _syntax_ = 'splat {arg.ssa_use} : {type.type}'  # (vector_type | tensor_type)
 class StoreOperation(DialectOp):
-    _syntax_ = 'store {addr.ssa_use} , {ref.ssa_use} [  {index.ssa_use_list} ] : {type.memref_type}'
+    _syntax_ = 'store {addr.ssa_use} , {ref.ssa_use} [  {index.ssa_use_list_optional} ] : {type.memref_type}'
 class TensorLoadOperation(DialectOp):
     _syntax_ = 'tensor_load {arg.ssa_use} : {type.type}'
-class TensorLoadOperation(DialectOp):
+class TensorStoreOperation(DialectOp):
     _syntax_ = 'tensor_store {src.ssa_use} , {dst.ssa_use} : {type.memref_type}'
 
 # Unary Operations
