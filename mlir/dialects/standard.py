@@ -92,7 +92,10 @@ class CmpiOperation(DialectOp):
 class CmpfOperation(DialectOp):
     _syntax_ = 'cmpf {comptype.string_literal} , {operand_a.ssa_id} , {operand_b.ssa_id} : {type.type}'
 class ConstantOperation(DialectOp):
-    _syntax_ = 'constant {value.attribute_value} : {type.type}'
+    _syntax_ = [
+        'constant {value.attribute_value} : {type.type}',
+        'constant {value.dense_elements_attribute}', # TODO this doesn't separate the value from the type 
+    ]
 class IndexCastOperation(DialectOp):
     _syntax_ = 'index_cast {arg.ssa_use} : {src_type.type} to {dst_type.type}'
 class MemrefCastOperation(DialectOp):
