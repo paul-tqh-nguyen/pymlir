@@ -65,7 +65,7 @@ complex_type : "complex" "<" type ">"
 tuple_type : "tuple" "<" (type ( "," type)*) ">"
 
 // Vector types
-vector_element_type : float_type | integer_type
+vector_element_type : float_type | integer_type | index_type
 vector_type : "vector" "<" static_dimension_list vector_element_type ">"
 
 // Tensor type
