@@ -212,12 +212,20 @@ class VectorType(Type):
 
 
 class RankedTensorType(Type):
-    _fields_ = ['dimensions', 'element_type']
+    _fields_ = ['dimensions', 'element_type', 'encoding']
+
+    def __init__(self, node: Token = None, **fields):
+        super().__init__(node, **fields)
+        if not hasattr(self, 'encoding'):
+            self.encoding = None
 
     def dump(self, indent: int = 0) -> str:
-        return 'tensor<%s>' % ('x'.join(
+        inner = 'x'.join(
             t.dump(indent)
-            for t in self.dimensions) + 'x' + self.element_type.dump(indent))
+            for t in self.dimensions) + 'x' + self.element_type.dump(indent)
+        if self.encoding is not None:
+            inner += f', {self.encoding.dump(indent)}'
+        return f'tensor<{inner}>'
 
 
 class UnrankedTensorType(Type):

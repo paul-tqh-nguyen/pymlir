@@ -70,8 +70,8 @@ vector_type : "vector" "<" static_dimension_list vector_element_type ">"
 
 // Tensor type
 tensor_memref_element_type : vector_element_type | vector_type | complex_type | type_alias
-ranked_tensor_type : "tensor" "<" dimension_list_ranked tensor_memref_element_type ">"
-unranked_tensor_type : "tensor" "<" dimension_list_unranked tensor_memref_element_type ">"
+ranked_tensor_type : "tensor" "<" dimension_list_ranked tensor_memref_element_type ("," attribute_alias)? ">"
+unranked_tensor_type : "tensor" "<" dimension_list_unranked tensor_memref_element_type ("," attribute_alias)? ">"
 tensor_type : ranked_tensor_type | unranked_tensor_type
 
 // Memref type
@@ -96,6 +96,13 @@ pretty_dialect_item_body : "<" pretty_dialect_item_contents ("," pretty_dialect_
 
 // NOTE: "pymlir_dialect_types" is defined externally by pyMLIR
 dialect_type : "!" (pymlir_dialect_types | opaque_dialect_item | pretty_dialect_item)
+
+// Sparse Tensor Encoding
+sparse_tensor_encoding_item : bare_id "." bare_id sparse_tensor_encoding_body?
+sparse_tensor_encoding_body : "<{" sparse_tensor_encoding_contents ("," sparse_tensor_encoding_contents)* "}>"
+sparse_tensor_encoding_contents : bare_id "=" sparse_tensor_encoding_value
+sparse_tensor_encoding_value : constant_literal
+                             | ("[" sparse_tensor_encoding_value ("," sparse_tensor_encoding_value)* "]")
 
 // Final type definition
 standard_type     : complex_type | float_type | function_type | index_type | integer_type | memref_type | none_type | tensor_type | tuple_type | vector_type
@@ -142,7 +149,7 @@ dialect_attribute_entry : (bare_id "." bare_id) | (bare_id "." bare_id "=" attri
 
 // Dialect attributes
 // NOTE: "pymlir_dialect_types" is defined externally by pyMLIR
-dialect_attribute : "#" (pymlir_dialect_types | opaque_dialect_item | pretty_dialect_item)
+dialect_attribute : "#" (pymlir_dialect_types | opaque_dialect_item | pretty_dialect_item | sparse_tensor_encoding_item)
 
 // Attribute dictionaries
 attribute_entry : dialect_attribute_entry | dependent_attribute_entry
