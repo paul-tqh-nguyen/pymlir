@@ -103,6 +103,7 @@ sparse_tensor_encoding_body : "<{" sparse_tensor_encoding_contents ("," sparse_t
 sparse_tensor_encoding_contents : bare_id "=" sparse_tensor_encoding_value
 sparse_tensor_encoding_value : constant_literal
                              | ("[" sparse_tensor_encoding_value ("," sparse_tensor_encoding_value)* "]")
+                             | affine_map
 
 // Final type definition
 standard_type     : complex_type | float_type | function_type | index_type | integer_type | memref_type | none_type | tensor_type | tuple_type | vector_type
