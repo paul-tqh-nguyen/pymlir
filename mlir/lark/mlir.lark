@@ -70,8 +70,8 @@ vector_type : "vector" "<" static_dimension_list vector_element_type ">"
 
 // Tensor type
 tensor_memref_element_type : vector_element_type | vector_type | complex_type | type_alias
-ranked_tensor_type : "tensor" "<" dimension_list_ranked tensor_memref_element_type ("," attribute_alias)? ">"
-unranked_tensor_type : "tensor" "<" dimension_list_unranked tensor_memref_element_type ("," attribute_alias)? ">"
+ranked_tensor_type : "tensor" "<" dimension_list_ranked tensor_memref_element_type ("," attribute_value)? ">"
+unranked_tensor_type : "tensor" "<" dimension_list_unranked tensor_memref_element_type ("," attribute_value)? ">"
 tensor_type : ranked_tensor_type | unranked_tensor_type
 
 // Memref type
@@ -85,7 +85,7 @@ memref_type : ranked_memref_type | unranked_memref_type
 
 // Dialect types - these can be opaque, pretty, or using custom dialects
 opaque_dialect_item : bare_id "<" string_literal ">"
-pretty_dialect_item : bare_id "." bare_id pretty_dialect_item_body?
+pretty_dialect_item : bare_id ("." bare_id)? pretty_dialect_item_body?
 pretty_dialect_item_body : "<" pretty_dialect_item_contents ("," pretty_dialect_item_contents)* ">"
 ?pretty_dialect_item_contents : ("(" pretty_dialect_item_contents ")")
                               | ("[" pretty_dialect_item_contents "]")
@@ -93,13 +93,13 @@ pretty_dialect_item_body : "<" pretty_dialect_item_contents ("," pretty_dialect_
                               | bare_id
                               | constant_literal
                               | type
+                              | pretty_dialect_item
 
 // NOTE: "pymlir_dialect_types" is defined externally by pyMLIR
 dialect_type : "!" (pymlir_dialect_types | opaque_dialect_item | pretty_dialect_item)
 
 // Sparse Tensor Encoding
-sparse_tensor_encoding_item : bare_id "." bare_id sparse_tensor_encoding_body?
-sparse_tensor_encoding_body : "<{" sparse_tensor_encoding_contents ("," sparse_tensor_encoding_contents)* "}>"
+sparse_tensor_encoding : "#sparse_tensor.encoding<{" sparse_tensor_encoding_contents ("," sparse_tensor_encoding_contents)* "}>"
 sparse_tensor_encoding_contents : bare_id "=" sparse_tensor_encoding_value
 sparse_tensor_encoding_value : constant_literal
                              | ("[" sparse_tensor_encoding_value ("," sparse_tensor_encoding_value)* "]")
@@ -144,13 +144,13 @@ sparse_elements_attribute : "sparse" "<" attribute_value "," attribute_value ">"
 standard_attribute : array_attribute | bool_attribute | dictionary_attribute | elements_attribute | float_attribute | integer_attribute | integer_set_attribute | string_attribute | symbol_ref_attribute | type_attribute | unit_attribute
 
 // Attribute values
-attribute_value : attribute_alias | dialect_attribute | standard_attribute
+attribute_value : attribute_alias | dialect_attribute | standard_attribute | sparse_tensor_encoding
 dependent_attribute_entry : bare_id "=" attribute_value
 dialect_attribute_entry : (bare_id "." bare_id) | (bare_id "." bare_id "=" attribute_value)
 
 // Dialect attributes
 // NOTE: "pymlir_dialect_types" is defined externally by pyMLIR
-dialect_attribute : "#" (pymlir_dialect_types | opaque_dialect_item | pretty_dialect_item | sparse_tensor_encoding_item)
+dialect_attribute : "#" (pymlir_dialect_types | opaque_dialect_item | pretty_dialect_item)
 
 // Attribute dictionaries
 attribute_entry : dialect_attribute_entry | dependent_attribute_entry

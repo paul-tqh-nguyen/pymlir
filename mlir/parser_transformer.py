@@ -84,6 +84,7 @@ class TreeToMlir(Transformer):
     dense_elements_attribute = astnodes.DenseElementsAttr
     opaque_elements_attribute = astnodes.OpaqueElementsAttr
     sparse_elements_attribute = astnodes.SparseElementsAttr
+    sparse_tensor_encoding = astnodes.SparseTensorEncoding
     float_attribute = astnodes.FloatAttr
     integer_attribute = astnodes.IntegerAttr
     integer_set_attribute = astnodes.IntSetAttr

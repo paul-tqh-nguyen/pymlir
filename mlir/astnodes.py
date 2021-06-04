@@ -297,9 +297,26 @@ class OpaqueDialectType(Type):
 class PrettyDialectType(Type):
     _fields_ = ['dialect', 'type', 'body']
 
+    def __init__(self, node: Token = None, **fields):
+        if len(node) == 3:
+            self.dialect = node[0]
+            self.type = node[1]
+            self.body = node[2]
+        elif len(node) == 2:
+            self.dialect = None
+            self.type = node[0]
+            self.body = node[1]
+        else:
+            raise TypeError(node)
+
+        super().__init__(None, **fields)
+
     def dump(self, indent: int = 0) -> str:
-        return '!%s.%s<%s>' % (self.dialect, self.type, ', '.join(
+        result = '%s<%s>' % (self.type, ', '.join(
             dump_or_value(item, indent) for item in self.body))
+        if self.dialect is not None:
+            result = f"!{self.dialect}.{result}"
+        return result
 
 
 class FunctionType(Type):
@@ -435,6 +452,52 @@ class SparseElementsAttr(ElementsAttr):
         return 'sparse<%s, %s> : %s' % (dump_or_value(self.indices, indent),
                                         dump_or_value(self.values, indent),
                                         self.type.dump(indent))
+
+
+class SparseTensorEncoding(Node):
+    _fields_ = ['dim_level_type', 'dim_ordering', 'pointer_bit_width', 'index_bit_width']
+
+    def __init__(self, node: Token = None, **fields):
+        dlt = list(filter(lambda x: x.children[0] == 'dimLevelType', node))
+        dimo = list(filter(lambda x: x.children[0] == 'dimOrdering', node))
+        pbw = list(filter(lambda x: x.children[0] == 'pointerBitWidth', node))
+        ibw = list(filter(lambda x: x.children[0] == 'indexBitWidth', node))
+
+        self.dim_level_type = [x.children[0] for x in dlt[0].children[1].children]
+        self.dim_ordering = dimo[0].children[1].children[0] if dimo else None
+        self.pointer_bit_width = pbw[0].children[1].children[0] if pbw else 64
+        self.index_bit_width = ibw[0].children[1].children[0] if ibw else 64
+
+        super().__init__(None, **fields)
+
+    def dump(self, indent: int = 0) -> str:
+        contents = []
+        contents.append(f'dimLevelType = {self.dim_level_type}')
+        if self.dim_ordering is not None:
+            contents.append(f'dimOrdering = {self.dim_ordering.dump()}')
+        contents.append(f'pointerBitWidth = {self.pointer_bit_width}')
+        contents.append(f'indexBitWidth = {self.index_bit_width}')
+        result = f'sparse_tensor.encoding<{{ {",".join(contents)} }}>'
+        return result
+
+    @property
+    def rank(self):
+        return len(self.dim_level_type)
+
+    @property
+    def ordering(self):
+        """
+        Returns a list of ints indicating how a [0, 1, ...] list would be transformed based on the dimension ordering
+
+        For example, affine_map<(i, j) -> (i, j)> would return an ordering of [0, 1]
+                     affine_map<(i, j) -> (j, i)> would return an ordering of [1, 0]
+                     affine_map<(i) -> (i)> would return an ordering of [0]
+        """
+        if self.dim_ordering is None:
+            return list(range(self.rank))
+
+        orig = self.dim_ordering.dims_and_symbols.dims
+        return [orig.index(sym) for sym in self.dim_ordering.map.dims]
 
 
 class PrimitiveAttribute(Attribute):
