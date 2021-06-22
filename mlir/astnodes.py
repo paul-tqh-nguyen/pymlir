@@ -477,7 +477,7 @@ class SparseTensorEncoding(Node):
             contents.append(f'dimOrdering = {self.dim_ordering.dump()}')
         contents.append(f'pointerBitWidth = {self.pointer_bit_width}')
         contents.append(f'indexBitWidth = {self.index_bit_width}')
-        result = f'sparse_tensor.encoding<{{ {",".join(contents)} }}>'
+        result = f'#sparse_tensor.encoding<{{ {",".join(contents)} }}>'
         return result
 
     @property
